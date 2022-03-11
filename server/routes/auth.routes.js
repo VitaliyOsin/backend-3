@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const { check, validationResult } = require("express-validator");
-const { generateUserData } = require("../utils/helpers");
+const { generateUserData, blockTC } = require("../utils/helpers");
 const tokenService = require("../services/token.service");
 
 const User = require("../models/User");
@@ -33,7 +33,7 @@ router.post("/signUp", [
         },
       });
     }
-    try {
+    blockTC(req, res, async () => {
       const { email, password } = req.body;
       const existingUser = await User.findOne({ email });
       if (existingUser) {
@@ -56,12 +56,7 @@ router.post("/signUp", [
       await tokenService.save(newUser._id, tokens.refreshToken);
 
       res.status(201).send({ ...tokens, _id: newUser._id });
-    } catch (err) {
-      res.status(500).json({
-        message:
-          "На сервере произошла ошибка. Попробуйте зайти позже." + err.message,
-      });
-    }
+    });
   },
 ]);
 
@@ -75,7 +70,7 @@ router.post("/signInWithPassword", [
   check("email", "Email некорректный").normalizeEmail().isEmail(),
   check("password", "Пароль не может быть пустым").exists(),
   async (req, res) => {
-    try {
+    blockTC(req, res, async () => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -117,12 +112,7 @@ router.post("/signInWithPassword", [
       await tokenService.save(existingUser._id, tokens.refreshToken);
 
       res.status(200).json({ ...tokens, userId: existingUser._id });
-    } catch (err) {
-      res.status(500).json({
-        message:
-          "На сервере произошла ошибка. Попробуйте зайти позже." + err.message,
-      });
-    }
+    });
   },
 ]);
 
@@ -131,7 +121,7 @@ function isTokenInvalid(data, dbToken) {
 }
 
 router.post("/token", async (req, res) => {
-  try {
+  blockTC(req, res, async () => {
     const { refresh_token: refreshToken } = req.body;
     const data = tokenService.validateRefresh(refreshToken);
 
@@ -147,12 +137,7 @@ router.post("/token", async (req, res) => {
     await tokenService.save(data._id, tokens.refreshToken.toString());
 
     res.status(200).send({ ...tokens, userId: data._id });
-  } catch (err) {
-    res.status(500).json({
-      message:
-        "На сервере произошла ошибка. Попробуйте зайти позже." + err.message,
-    });
-  }
+  });
 });
 
 module.exports = router;

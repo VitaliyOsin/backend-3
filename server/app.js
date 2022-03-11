@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const config = require("config");
 const chalk = require("chalk");
+const cors = require("cors");
 const initDataBase = require("./startUp/initDatabase.js");
 const routes = require("./routes");
 
@@ -11,6 +12,7 @@ const PORT = config.get("port") || 8080;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 app.use("/api", routes);
 
 /* if (process.env.NODE_ENV === "production") {

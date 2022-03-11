@@ -1,5 +1,5 @@
 import httpService from "./http.service";
-const qualityEndpoint = "quality/";
+const qualityEndpoint = "/quality/";
 
 const qualityService = {
     fetchAll: async () => {

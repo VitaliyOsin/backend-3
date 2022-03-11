@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const auth = require("../middleware/auth.middleware");
 const Comment = require("../models/Comment");
 const { blockTC } = require("../utils/helpers");
@@ -27,7 +28,7 @@ router
 router.delete("/:commentId", auth, async (req, res) => {
   blockTC(req, res, async () => {
     const { commentId } = req.params;
-    const removedComment = await Comment.findById({ commentId });
+    const removedComment = await Comment.findById(commentId);
     if (removedComment.userId.toString() === req.user._id) {
       await removedComment.remove();
       return res.send(null);
