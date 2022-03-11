@@ -12,6 +12,18 @@ function generateUserData() {
   };
 }
 
+function blockTC(req, res, fn) {
+  try {
+    fn();
+  } catch (err) {
+    res.status(500).json({
+      message:
+        "На сервере произошла ошибка. Попробуйте зайти позже." + err.message,
+    });
+  }
+}
+
 module.exports = {
   generateUserData,
+  blockTC,
 };
