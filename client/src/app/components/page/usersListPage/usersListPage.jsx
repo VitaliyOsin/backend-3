@@ -25,7 +25,6 @@ const UsersListPage = () => {
     const pageSize = 8;
 
     const handleDelete = (userId) => {
-        console.log("delete user");
         // setUsers(users.filter((user) => user._id !== userId));
     };
     const handleToggleBookMark = (id) => {
@@ -35,8 +34,8 @@ const UsersListPage = () => {
             }
             return user;
         });
-        // setUsers(newArray);
         console.log(newArray);
+        // setUsers(newArray);
     };
 
     useEffect(() => {

@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const mongoose = require("mongoose");
 const config = require("config");
 const chalk = require("chalk");
@@ -15,11 +16,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use("/api", routes);
 
-/* if (process.env.NODE_ENV === "production") {
-  console.log("Production");
-} else {
-  console.log("Development");
-} */
+if (process.env.NODE_ENV === "production") {
+  const clientPath = path.join(__dirname, "client");
+  const indexPath = path.join(clientPath, "index.html");
+  app.use("/", express.static(clientPath));
+  app.get("*", (req, res) => {
+    res.sendFile(indexPath);
+  });
+}
 
 async function start() {
   try {
